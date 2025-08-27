@@ -1,0 +1,1998 @@
+{
+  "name": "Prospace-Flipkart copy",
+  "nodes": [
+    {
+      "parameters": {
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keys",
+              "value": "Watt-Hour"
+            },
+            {
+              "name": "startTs",
+              "value": "={{ $json.startts }}"
+            },
+            {
+              "name": "endTs",
+              "value": "={{ $json.endts }}"
+            },
+            {
+              "name": "limit",
+              "value": "3000"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Authorization",
+              "value": "=Bearer {{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "910b5384-8c47-4979-823e-83597fa647e6",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        620,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Watt-Hour",
+        "options": {}
+      },
+      "id": "e23f6971-6c7a-4716-8667-62c989ac2282",
+      "name": "Item Lists",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [
+        780,
+        280
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "options": {
+          "fileName": "=Watt-Hour-{{$now}}.xls",
+          "headerRow": true
+        }
+      },
+      "id": "fd189d3b-5f4a-47a6-ad02-ad452a09f5d5",
+      "name": "Spreadsheet File",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nnewItems = [];\nvar total =0.0;\nvar count =0;\nfor (const item of $input.all()) {\n  total+=parseFloat(item.json.value);\n  //item.json.myNewField = item.json.value;\n  var date = new Date(item.json.ts);\n  count++\n  newItems.push(\n    {\n    \"json\":\n      {\n        \"Timestamp\": date.toLocaleString('en-GB', { timeZone: 'Asia/Calcutta'}),\n    \t\"Record\": item.json.value\n      }\n    }\n  )\n}\n\n// push Average \n//newItems.push(\n//    {\n//    \"json\":\n//      {\n//        \"Timestamp\": \"Avg\",\n//    \t\"Record\": total/count\n//      }\n//    }\n//  )\n\nreturn newItems;\n//return $input.all();"
+      },
+      "id": "6a4b3b7a-2073-423d-8dea-c534a6a8a397",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "username"
+            },
+            {
+              "name": "password"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "34819ddd-50b2-439d-b123-1f775df5bbe5",
+      "name": "HTTP Request1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        240,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "endts",
+              "value": "={{$today/1}}"
+            },
+            {
+              "name": "startts",
+              "value": "={{$today-86400000}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1fd147dd-dc32-4ee8-893e-2f99fe34e046",
+      "name": "Set",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        420,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "name": "=Watt-Hour-Reports{{$now}}.xls",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx",
+          "mode": "list",
+          "cachedResultName": "Flipkart",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx"
+        },
+        "options": {}
+      },
+      "id": "8afffa4a-6a72-4709-bbb1-181d93b03c7f",
+      "name": "Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1300,
+        280
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "J3sANmFOAlL25Qyu",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 1
+            }
+          ]
+        }
+      },
+      "id": "5f7e14e5-f70a-4eb1-b991-6af1c1b978f5",
+      "name": "Schedule Trigger(Kwh)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        20,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keys",
+              "value": "Current"
+            },
+            {
+              "name": "startTs",
+              "value": "={{ $json.startts }}"
+            },
+            {
+              "name": "endTs",
+              "value": "={{ $json.endts }}"
+            },
+            {
+              "name": "limit",
+              "value": "3000"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Authorization",
+              "value": "=Bearer {{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "a2388a6a-e00d-40b0-a387-6873afe12091",
+      "name": "HTTP Request2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        620,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Current",
+        "options": {}
+      },
+      "id": "a38af748-053b-4a06-8159-58a7f9baf1b6",
+      "name": "Item Lists1",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [
+        780,
+        520
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "options": {
+          "fileName": "=Current-{{$now}}.xls",
+          "headerRow": true
+        }
+      },
+      "id": "5d29579c-338b-4efe-9f7b-26287efc7378",
+      "name": "Spreadsheet File1",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nnewItems = [];\nvar total =0.0;\nvar count =0;\nfor (const item of $input.all()) {\n  total+=parseFloat(item.json.value);\n  //item.json.myNewField = item.json.value;\n  var date = new Date(item.json.ts);\n  count++\n  newItems.push(\n    {\n    \"json\":\n      {\n        \"Timestamp\": date.toLocaleString('en-GB', { timeZone: 'Asia/Calcutta'}),\n    \t\"Record\": item.json.value\n      }\n    }\n  )\n}\n\n// push Average \n//newItems.push(\n//    {\n//    \"json\":\n//      {\n//        \"Timestamp\": \"Avg\",\n//    \t\"Record\": total/count\n//      }\n//    }\n//  )\n\nreturn newItems;\n//return $input.all();"
+      },
+      "id": "4aa06dea-5b7e-46d2-81b5-8b89ead22e15",
+      "name": "Code1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "username"
+            },
+            {
+              "name": "password"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "64874ca7-c0af-426e-99bc-6c3d6fb729ae",
+      "name": "HTTP Request3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        240,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "endts",
+              "value": "={{$today/1}}"
+            },
+            {
+              "name": "startts",
+              "value": "={{$today-86400000}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7d900dc3-a656-4adb-bdb9-c16335d8d05f",
+      "name": "Set1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        420,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "name": "=Current-Reports{{$now}}.xls",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx",
+          "mode": "list",
+          "cachedResultName": "Flipkart",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx"
+        },
+        "options": {}
+      },
+      "id": "2521c14a-dde5-47f6-b9d7-c34dba32aa9d",
+      "name": "Google Drive1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1300,
+        520
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "J3sANmFOAlL25Qyu",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keys",
+              "value": "PF-AVG"
+            },
+            {
+              "name": "startTs",
+              "value": "={{ $json.startts }}"
+            },
+            {
+              "name": "endTs",
+              "value": "={{ $json.endts }}"
+            },
+            {
+              "name": "limit",
+              "value": "3000"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Authorization",
+              "value": "=Bearer {{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "bd1c2300-a212-4e7c-87d8-e59da419df41",
+      "name": "HTTP Request4",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        620,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "PF-AVG",
+        "options": {}
+      },
+      "id": "2c97561e-7376-4ad9-8636-fb0342debc4a",
+      "name": "Item Lists2",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [
+        780,
+        760
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "options": {
+          "fileName": "=PF-AVG-{{$now}}.xls",
+          "headerRow": true
+        }
+      },
+      "id": "f2f69543-6865-44e0-b571-13208b3b1df1",
+      "name": "Spreadsheet File2",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nnewItems = [];\nvar total =0.0;\nvar count =0;\nfor (const item of $input.all()) {\n  total+=parseFloat(item.json.value);\n  //item.json.myNewField = item.json.value;\n  var date = new Date(item.json.ts);\n  count++\n  newItems.push(\n    {\n    \"json\":\n      {\n        \"Timestamp\": date.toLocaleString('en-GB', { timeZone: 'Asia/Calcutta'}),\n    \t\"Record\": item.json.value\n      }\n    }\n  )\n}\n\n// push Average \n//newItems.push(\n//    {\n//    \"json\":\n//      {\n//        \"Timestamp\": \"Avg\",\n//    \t\"Record\": total/count\n//      }\n//    }\n//  )\n\nreturn newItems;\n//return $input.all();"
+      },
+      "id": "8dd78dbf-8f6b-4b95-9968-cf964bbdef92",
+      "name": "Code2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "username"
+            },
+            {
+              "name": "password"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "92fdeaae-9c6a-4d0e-a9dd-60bfd91b778c",
+      "name": "HTTP Request5",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        240,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "endts",
+              "value": "={{$today/1}}"
+            },
+            {
+              "name": "startts",
+              "value": "={{$today-86400000}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bfde83a1-fd93-476f-81ef-4e13c71fd886",
+      "name": "Set2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        420,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "name": "=PF-AVG-Reports{{$now}}.xls",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx",
+          "mode": "list",
+          "cachedResultName": "Flipkart",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx"
+        },
+        "options": {}
+      },
+      "id": "85906c38-b71c-422f-ac9d-af0bb4087ac5",
+      "name": "Google Drive2",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1300,
+        760
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "J3sANmFOAlL25Qyu",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keys",
+              "value": "VBR"
+            },
+            {
+              "name": "startTs",
+              "value": "={{ $json.startts }}"
+            },
+            {
+              "name": "endTs",
+              "value": "={{ $json.endts }}"
+            },
+            {
+              "name": "limit",
+              "value": "3000"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Authorization",
+              "value": "=Bearer {{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "a51d219c-cb65-4224-9fa4-d604e1123d3c",
+      "name": "HTTP Request6",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        600,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "VBR",
+        "options": {}
+      },
+      "id": "46fe6a2d-7266-4473-b5f4-cdb82f2b1178",
+      "name": "Item Lists3",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [
+        760,
+        940
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "options": {
+          "fileName": "=VBR-{{$now}}.xls",
+          "headerRow": true
+        }
+      },
+      "id": "fce460d9-1121-4e5d-b231-d39d07f5d377",
+      "name": "Spreadsheet File3",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nnewItems = [];\nvar total =0.0;\nvar count =0;\nfor (const item of $input.all()) {\n  total+=parseFloat(item.json.value);\n  //item.json.myNewField = item.json.value;\n  var date = new Date(item.json.ts);\n  count++\n  newItems.push(\n    {\n    \"json\":\n      {\n        \"Timestamp\": date.toLocaleString('en-GB', { timeZone: 'Asia/Calcutta'}),\n    \t\"Record\": item.json.value\n      }\n    }\n  )\n}\n\n// push Average \n//newItems.push(\n//    {\n//    \"json\":\n//      {\n//        \"Timestamp\": \"Avg\",\n//    \t\"Record\": total/count\n//      }\n//    }\n//  )\n\nreturn newItems;\n//return $input.all();"
+      },
+      "id": "0058f81e-4cf0-4a25-aca3-02d8e321f09f",
+      "name": "Code3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        940,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "username"
+            },
+            {
+              "name": "password"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "daf2a56f-b48c-4e03-94aa-49046c20ee88",
+      "name": "HTTP Request7",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        220,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "endts",
+              "value": "={{$today/1}}"
+            },
+            {
+              "name": "startts",
+              "value": "={{$today-86400000}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0d6048f5-2085-42b6-a810-6e4045103c5f",
+      "name": "Set3",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        400,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "name": "=VBR-Reports{{$now}}.xls",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx",
+          "mode": "list",
+          "cachedResultName": "Flipkart",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx"
+        },
+        "options": {}
+      },
+      "id": "558c165e-bcf8-4620-9a21-af807e712ceb",
+      "name": "Google Drive3",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1280,
+        940
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "J3sANmFOAlL25Qyu",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keys",
+              "value": "VRY"
+            },
+            {
+              "name": "startTs",
+              "value": "={{ $json.startts }}"
+            },
+            {
+              "name": "endTs",
+              "value": "={{ $json.endts }}"
+            },
+            {
+              "name": "limit",
+              "value": "3000"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Authorization",
+              "value": "=Bearer {{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "cd35b747-e136-48ed-a811-e1ec3f7727bc",
+      "name": "HTTP Request8",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        580,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "VRY",
+        "options": {}
+      },
+      "id": "05ba8847-88b0-4dec-ad50-056cfb9e340b",
+      "name": "Item Lists4",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [
+        740,
+        1140
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "options": {
+          "fileName": "=VRY-{{$now}}.xls",
+          "headerRow": true
+        }
+      },
+      "id": "c0c14821-d6c5-444a-bc44-1b8a18a9869f",
+      "name": "Spreadsheet File4",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nnewItems = [];\nvar total =0.0;\nvar count =0;\nfor (const item of $input.all()) {\n  total+=parseFloat(item.json.value);\n  //item.json.myNewField = item.json.value;\n  var date = new Date(item.json.ts);\n  count++\n  newItems.push(\n    {\n    \"json\":\n      {\n        \"Timestamp\": date.toLocaleString('en-GB', { timeZone: 'Asia/Calcutta'}),\n    \t\"Record\": item.json.value\n      }\n    }\n  )\n}\n\n// push Average \n//newItems.push(\n//    {\n//    \"json\":\n//      {\n//        \"Timestamp\": \"Avg\",\n//    \t\"Record\": total/count\n//      }\n//    }\n//  )\n\nreturn newItems;\n//return $input.all();"
+      },
+      "id": "dec808e8-37ec-46b9-8c99-6669523535a5",
+      "name": "Code4",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "username"
+            },
+            {
+              "name": "password"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "94b0bd37-6fef-4bb2-a802-2408dba9587d",
+      "name": "HTTP Request9",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        200,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "endts",
+              "value": "={{$today/1}}"
+            },
+            {
+              "name": "startts",
+              "value": "={{$today-86400000}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "67ab7f3c-ce80-4ee9-a137-271bfab37295",
+      "name": "Set4",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        380,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "name": "=VRY-Reports{{$now}}.xls",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx",
+          "mode": "list",
+          "cachedResultName": "Flipkart",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx"
+        },
+        "options": {}
+      },
+      "id": "699f793d-ba34-40a9-91b0-853f5bb43143",
+      "name": "Google Drive4",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1260,
+        1140
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "J3sANmFOAlL25Qyu",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keys",
+              "value": "VYB"
+            },
+            {
+              "name": "startTs",
+              "value": "={{ $json.startts }}"
+            },
+            {
+              "name": "endTs",
+              "value": "={{ $json.endts }}"
+            },
+            {
+              "name": "limit",
+              "value": "3000"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Authorization",
+              "value": "=Bearer {{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "a58e5986-af08-45bb-bc57-ef486ddf4b22",
+      "name": "HTTP Request10",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        580,
+        1360
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "VYB",
+        "options": {}
+      },
+      "id": "b743458a-b975-4040-8b35-7dac775804f7",
+      "name": "Item Lists5",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [
+        740,
+        1360
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "options": {
+          "fileName": "=VYB-{{$now}}.xls",
+          "headerRow": true
+        }
+      },
+      "id": "377b4f2b-354a-48cc-9287-caf6f28f55bb",
+      "name": "Spreadsheet File5",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        1360
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nnewItems = [];\nvar total =0.0;\nvar count =0;\nfor (const item of $input.all()) {\n  total+=parseFloat(item.json.value);\n  //item.json.myNewField = item.json.value;\n  var date = new Date(item.json.ts);\n  count++\n  newItems.push(\n    {\n    \"json\":\n      {\n        \"Timestamp\": date.toLocaleString('en-GB', { timeZone: 'Asia/Calcutta'}),\n    \t\"Record\": item.json.value\n      }\n    }\n  )\n}\n\n// push Average \n//newItems.push(\n//    {\n//    \"json\":\n//      {\n//        \"Timestamp\": \"Avg\",\n//    \t\"Record\": total/count\n//      }\n//    }\n//  )\n\nreturn newItems;\n//return $input.all();"
+      },
+      "id": "0b16553f-e79e-4bf5-ae75-8c5924d18a47",
+      "name": "Code5",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        1360
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "username"
+            },
+            {
+              "name": "password"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "22b5a96b-039e-48b3-be3a-6408ea75560b",
+      "name": "HTTP Request11",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        200,
+        1360
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "endts",
+              "value": "={{$today/1}}"
+            },
+            {
+              "name": "startts",
+              "value": "={{$today-86400000}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "62550bd5-11aa-4d04-95f5-fafb17fd5276",
+      "name": "Set5",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        380,
+        1360
+      ]
+    },
+    {
+      "parameters": {
+        "name": "=VYB-Reports{{$now}}.xls",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx",
+          "mode": "list",
+          "cachedResultName": "Flipkart",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx"
+        },
+        "options": {}
+      },
+      "id": "4bbe99f2-9888-4022-b1ec-722d6e20eafe",
+      "name": "Google Drive5",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1260,
+        1360
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "J3sANmFOAlL25Qyu",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keys",
+              "value": "Watts"
+            },
+            {
+              "name": "startTs",
+              "value": "={{ $json.startts }}"
+            },
+            {
+              "name": "endTs",
+              "value": "={{ $json.endts }}"
+            },
+            {
+              "name": "limit",
+              "value": "3000"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Authorization",
+              "value": "=Bearer {{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "c9cec718-ff16-4c58-8786-9d69f72fcccd",
+      "name": "HTTP Request12",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        560,
+        1580
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Watts",
+        "options": {}
+      },
+      "id": "ad016fd0-11c6-484a-82e9-322ebccd4310",
+      "name": "Item Lists6",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [
+        720,
+        1580
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "options": {
+          "fileName": "=Watts-{{$now}}.xls",
+          "headerRow": true
+        }
+      },
+      "id": "c5fd1a04-47f3-40ad-ba0c-f98d36df84d9",
+      "name": "Spreadsheet File6",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        1580
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nnewItems = [];\nvar total =0.0;\nvar count =0;\nfor (const item of $input.all()) {\n  total+=parseFloat(item.json.value);\n  //item.json.myNewField = item.json.value;\n  var date = new Date(item.json.ts);\n  count++\n  newItems.push(\n    {\n    \"json\":\n      {\n        \"Timestamp\": date.toLocaleString('en-GB', { timeZone: 'Asia/Calcutta'}),\n    \t\"Record\": item.json.value\n      }\n    }\n  )\n}\n\n// push Average \n//newItems.push(\n//    {\n//    \"json\":\n//      {\n//        \"Timestamp\": \"Avg\",\n//    \t\"Record\": total/count\n//      }\n//    }\n//  )\n\nreturn newItems;\n//return $input.all();"
+      },
+      "id": "7ef19ab4-9c2d-4755-b2c7-75ab5b8a81b0",
+      "name": "Code6",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        1580
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "username"
+            },
+            {
+              "name": "password"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "6b0aa423-6541-4d8f-8ce5-36587ffd8b0a",
+      "name": "HTTP Request13",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        180,
+        1580
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "endts",
+              "value": "={{$today/1}}"
+            },
+            {
+              "name": "startts",
+              "value": "={{$today-86400000}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "619c45b5-5f89-40ff-8838-ae272800690d",
+      "name": "Set6",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        360,
+        1580
+      ]
+    },
+    {
+      "parameters": {
+        "name": "=Watts-Reports{{$now}}.xls",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx",
+          "mode": "list",
+          "cachedResultName": "Flipkart",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1sY-oV2w8TmTsdnPulksOWdWmsslmrYBx"
+        },
+        "options": {}
+      },
+      "id": "ea0e664f-309d-41ac-94eb-a2d6a798e87f",
+      "name": "Google Drive6",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1240,
+        1580
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "J3sANmFOAlL25Qyu",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 1,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "c2e180cd-fdab-454d-a90b-89fcc4fc480c",
+      "name": "Schedule Trigger(Current)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        20,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 2
+            }
+          ]
+        }
+      },
+      "id": "7875456f-3954-4a55-9d99-df5d4b6c36cd",
+      "name": "Schedule Trigger(PF-AVG)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        20,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 2,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "55d14c54-fd36-49eb-89f9-33e6d7d75cf4",
+      "name": "Schedule Trigger(VBR)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 3
+            }
+          ]
+        }
+      },
+      "id": "be9dd5b3-4994-401c-b84d-c4503acbdca8",
+      "name": "Schedule Trigger(VRY)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -20,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 3,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "2b8c17ed-b6b7-4ba0-bf7a-4f9c17f9d1f5",
+      "name": "Schedule Trigger(VYB)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -20,
+        1360
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 4
+            }
+          ]
+        }
+      },
+      "id": "5715ebaf-7df3-401c-9e55-5b53c46c50c5",
+      "name": "Schedule Trigger(Watts)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -40,
+        1580
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Item Lists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Lists": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spreadsheet File": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Spreadsheet File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger(Kwh)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Item Lists1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Lists1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spreadsheet File1": {
+      "main": [
+        [
+          {
+            "node": "Google Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Spreadsheet File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Set1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Item Lists2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Lists2": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spreadsheet File2": {
+      "main": [
+        [
+          {
+            "node": "Google Drive2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Spreadsheet File2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Set2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "Item Lists3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Lists3": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spreadsheet File3": {
+      "main": [
+        [
+          {
+            "node": "Google Drive3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Spreadsheet File3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request7": {
+      "main": [
+        [
+          {
+            "node": "Set3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request8": {
+      "main": [
+        [
+          {
+            "node": "Item Lists4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Lists4": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spreadsheet File4": {
+      "main": [
+        [
+          {
+            "node": "Google Drive4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Spreadsheet File4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request9": {
+      "main": [
+        [
+          {
+            "node": "Set4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request10": {
+      "main": [
+        [
+          {
+            "node": "Item Lists5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Lists5": {
+      "main": [
+        [
+          {
+            "node": "Code5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spreadsheet File5": {
+      "main": [
+        [
+          {
+            "node": "Google Drive5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code5": {
+      "main": [
+        [
+          {
+            "node": "Spreadsheet File5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request11": {
+      "main": [
+        [
+          {
+            "node": "Set5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set5": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request12": {
+      "main": [
+        [
+          {
+            "node": "Item Lists6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Lists6": {
+      "main": [
+        [
+          {
+            "node": "Code6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spreadsheet File6": {
+      "main": [
+        [
+          {
+            "node": "Google Drive6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code6": {
+      "main": [
+        [
+          {
+            "node": "Spreadsheet File6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request13": {
+      "main": [
+        [
+          {
+            "node": "Set6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set6": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger(Current)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger(PF-AVG)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger(VBR)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger(VRY)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger(VYB)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger(Watts)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Calcutta",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "3b90e52f-effa-4a11-abed-1766850d4f68",
+  "id": "Njn7UcMCWbwmAfqQ",
+  "meta": {
+    "instanceId": "9712a5e634822549c83f5ff72eb6bf76ec2a72b51e237cb63d838e523a93e847"
+  },
+  "tags": []
+}
